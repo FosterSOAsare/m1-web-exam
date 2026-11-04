@@ -13,6 +13,9 @@ export type BikeModel = {
   priceCents: number;
 };
 
+// Only the fields sent are changed
+export type UpdateBikeModel = Partial<Omit<BikeModel, "id">>;
+
 export type BikesPageModel = {
   totalCount: number;
   bikes: BikeModel[];

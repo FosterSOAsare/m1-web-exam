@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import type { BikeModel } from "../models/BikeModel";
+import type { BikeModel, UpdateBikeModel } from "../models/BikeModel";
 
 export const useBikeDetailsProvider = (bikeId: string) => {
   const [bike, setBike] = useState<BikeModel | null>(null);
@@ -16,5 +16,11 @@ export const useBikeDetailsProvider = (bikeId: string) => {
       });
   };
 
-  return { bike, load, isLoading };
+  // Returns the request so the caller can react to errors
+  const updateBike = (input: UpdateBikeModel) =>
+    axios
+      .patch<BikeModel>(`http://localhost:3000/bikes/${bikeId}`, input)
+      .then((result) => setBike(result.data));
+
+  return { bike, load, isLoading, updateBike };
 };

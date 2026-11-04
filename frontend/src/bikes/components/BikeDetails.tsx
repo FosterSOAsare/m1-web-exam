@@ -12,7 +12,7 @@ interface BikeDetailsProps {
 }
 
 export const BikeDetails = ({ bikeId }: BikeDetailsProps) => {
-  const { bike, isLoading, load } = useBikeDetailsProvider(bikeId);
+  const { bike, isLoading, load, updateBike } = useBikeDetailsProvider(bikeId);
 
   useEffect(() => {
     load();
@@ -45,10 +45,18 @@ export const BikeDetails = ({ bikeId }: BikeDetailsProps) => {
 
       <Row gutter={[16, 16]} style={{ alignSelf: "stretch" }}>
         <Col xs={24} md={12}>
-          <BikeInformationCard bike={bike} isLoading={isLoading} />
+          <BikeInformationCard
+            bike={bike}
+            isLoading={isLoading}
+            updateBike={updateBike}
+          />
         </Col>
         <Col xs={24} md={12}>
-          <BikeSpecificationsCard bike={bike} isLoading={isLoading} />
+          <BikeSpecificationsCard
+            bike={bike}
+            isLoading={isLoading}
+            updateBike={updateBike}
+          />
         </Col>
       </Row>
     </div>
