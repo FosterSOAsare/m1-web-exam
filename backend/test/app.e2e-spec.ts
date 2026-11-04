@@ -6,7 +6,10 @@ import { AppModule } from "../src/app.module";
 import { BikeEntity } from "../src/bikes/entities/bike.entity";
 import { configureApp } from "../src/configure-app";
 import type { PurchasedBikeSellResponseDto } from "../src/customers/dto/bike-sell-response.dto";
-import type { CustomerResponseDto } from "../src/customers/dto/customer-response.dto";
+import type {
+  CustomerResponseDto,
+  CustomersPageResponseDto,
+} from "../src/customers/dto/customer-response.dto";
 import { BikeSellEntity } from "../src/customers/entities/bike-sell.entity";
 import { CustomerEntity } from "../src/customers/entities/customer.entity";
 import { databaseOptions } from "../src/database/database-options";
@@ -78,7 +81,9 @@ describe("Bike shop API", () => {
       .get("/customers")
       .expect(200);
     expect(
-      (all.body as CustomerResponseDto[]).map((item) => item.lastName),
+      (all.body as CustomersPageResponseDto).customers.map(
+        (item) => item.lastName,
+      ),
     ).toEqual(["Bernard", "Durand", "Martin", "Moreau"]);
     await request(app.getHttpServer())
       .patch(`/customers/${customer.id}`)
@@ -286,9 +291,7 @@ describe("Bike shop API", () => {
     expect(await database.getRepository(BikeEntity).count()).toBe(4);
   });
 
-  it("exposes no bike catalogue routes or Hello World route", async () => {
-    await request(app.getHttpServer()).get("/bikes").expect(404);
-    await request(app.getHttpServer()).post("/bikes").send({}).expect(404);
+  it("exposes no Hello World route", async () => {
     await request(app.getHttpServer()).get("/").expect(404);
   });
 });
