@@ -5,6 +5,7 @@ import { BikeEntity } from "./entities/bike.entity";
 import type {
   BikeModel,
   BikesPageModel,
+  CreateBikeModel,
   FindBikesModel,
 } from "./models/bike.model";
 
@@ -31,6 +32,11 @@ export class BikesRepository {
       .getRepository(BikeEntity)
       .findOneBy({ id });
     return entity ? this.toBikeModel(entity) : null;
+  }
+
+  async create(input: CreateBikeModel): Promise<BikeModel> {
+    const repository = this.dataSource.getRepository(BikeEntity);
+    return this.toBikeModel(await repository.save(repository.create(input)));
   }
 
   private toBikeModel(entity: BikeEntity): BikeModel {

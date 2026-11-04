@@ -18,4 +18,16 @@ export type BikesPageModel = {
   bikes: BikeModel[];
 };
 
-export type CreateBikeModel = Omit<BikeModel, "id">;
+export type CreateBikeModel = {
+  brand: string;
+  model: string;
+  description: string;
+  category: string;
+  frameMaterial: string;
+  frameSizeCm: number;
+  wheelSizeInches: number;
+  gearCount: number;
+  weightKg: number;
+  electric: boolean;
+  priceCents: number;
+};

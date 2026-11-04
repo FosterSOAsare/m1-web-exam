@@ -3,6 +3,7 @@ import { BikesRepository } from "./bikes.repository";
 import type {
   BikeModel,
   BikesPageModel,
+  CreateBikeModel,
   FindBikesModel,
 } from "./models/bike.model";
 
@@ -21,5 +22,9 @@ export class BikesService {
     const bike = await this.repository.findById(id);
     if (!bike) throw new NotFoundException("Bike not found");
     return bike;
+  }
+
+  create(input: CreateBikeModel): Promise<BikeModel> {
+    return this.repository.create(input);
   }
 }
