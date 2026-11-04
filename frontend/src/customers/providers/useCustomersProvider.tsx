@@ -11,10 +11,12 @@ export const useCustomersProvider = () => {
   const [totalCount, setTotalCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const load = () => {
+  const load = (page: number, limit: number) => {
     setIsLoading(true);
     axios
-      .get<CustomersPageModel>("http://localhost:3000/customers")
+      .get<CustomersPageModel>("http://localhost:3000/customers", {
+        params: { page, limit },
+      })
       .then((result) => {
         setCustomers(result.data.customers);
         setTotalCount(result.data.totalCount);

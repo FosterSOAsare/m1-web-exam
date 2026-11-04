@@ -1,16 +1,35 @@
-import { Skeleton, Space } from "antd";
-import { useEffect } from "react";
+import { Pagination, Row, Select, Skeleton, Space } from "antd";
+import { useEffect, useState } from "react";
 import { useCustomersProvider } from "../providers/useCustomersProvider";
 import { AddCustomerButton } from "./AddCustomerButton";
 import { CustomerListItem } from "./CustomerListItem";
 
+const limitOptions = [10, 15, 20, 25,  50].map((value) => ({
+  value,
+  label: `${value} / page`,
+}));
+
 export const CustomersList = () => {
-  const { customers, deleteCustomer, createCustomer, isLoading, load } =
-    useCustomersProvider();
+  const {
+    customers,
+    totalCount,
+    deleteCustomer,
+    createCustomer,
+    isLoading,
+    load,
+  } = useCustomersProvider();
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
 
   useEffect(() => {
-    load();
-  }, []);
+    load(page, limit);
+  }, [page, limit]);
+
+  // The current page may not exist with the new limit, so go back to the first
+  const onLimitChange = (value: number) => {
+    setLimit(value);
+    setPage(1);
+  };
 
   return (
     <Space orientation="vertical" style={{ padding: ".25rem .5rem" }}>
@@ -26,6 +45,27 @@ export const CustomersList = () => {
           />
         ))
       )}
+      <Row
+        justify="space-between"
+        align="middle"
+        style={{ padding: ".5rem", marginTop: "1rem" }}
+      >
+        <Select
+          aria-label="Customers per page"
+          value={limit}
+          options={limitOptions}
+          disabled={isLoading}
+          onChange={onLimitChange}
+        />
+        <Pagination
+          current={page}
+          pageSize={limit}
+          total={totalCount}
+          showSizeChanger={false}
+          disabled={isLoading}
+          onChange={setPage}
+        />
+      </Row>
     </Space>
   );
 };
