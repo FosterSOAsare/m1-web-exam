@@ -3,17 +3,22 @@ import { useState } from "react";
 import type {
   CreateCustomerModel,
   CustomerModel,
+  CustomersPageModel,
 } from "../models/CustomerModel";
 
 export const useCustomersProvider = () => {
   const [customers, setCustomers] = useState<CustomerModel[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const load = () => {
     setIsLoading(true);
     axios
-      .get("http://localhost:3000/customers")
-      .then((result) => setCustomers(result.data))
+      .get<CustomersPageModel>("http://localhost:3000/customers")
+      .then((result) => {
+        setCustomers(result.data.customers);
+        setTotalCount(result.data.totalCount);
+      })
       .finally(() => {
         setIsLoading(false);
       });
@@ -22,6 +27,7 @@ export const useCustomersProvider = () => {
   const deleteCustomer = (id: string) => {
     axios.delete(`http://localhost:3000/customers/${id}`).then(() => {
       setCustomers((prev) => prev.filter((customer) => customer.id !== id));
+      setTotalCount((prev) => prev - 1);
     });
   };
 
@@ -38,7 +44,15 @@ export const useCustomersProvider = () => {
               a.firstName.localeCompare(b.firstName),
           ),
         );
+        setTotalCount((prev) => prev + 1);
       });
 
-  return { customers, load, isLoading, deleteCustomer, createCustomer };
+  return {
+    customers,
+    totalCount,
+    load,
+    isLoading,
+    deleteCustomer,
+    createCustomer,
+  };
 };
