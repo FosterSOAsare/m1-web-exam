@@ -1,6 +1,10 @@
 import axios from "axios";
 import { useState } from "react";
-import type { BikeModel, BikesPageModel } from "../models/BikeModel";
+import type {
+  BikeModel,
+  BikesPageModel,
+  CreateBikeModel,
+} from "../models/BikeModel";
 
 export const useBikesProvider = () => {
   const [bikes, setBikes] = useState<BikeModel[]>([]);
@@ -22,5 +26,20 @@ export const useBikesProvider = () => {
       });
   };
 
-  return { bikes, totalCount, load, isLoading };
+  // Returns the request so the caller can react to errors
+  const createBike = (input: CreateBikeModel) =>
+    axios
+      .post<BikeModel>("http://localhost:3000/bikes", input)
+      .then((result) => {
+        // Keep the same order as the backend: brand, then model
+        setBikes((prev) =>
+          [...prev, result.data].sort(
+            (a, b) =>
+              a.brand.localeCompare(b.brand) || a.model.localeCompare(b.model),
+          ),
+        );
+        setTotalCount((prev) => prev + 1);
+      });
+
+  return { bikes, totalCount, load, isLoading, createBike };
 };

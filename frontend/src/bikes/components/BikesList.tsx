@@ -1,6 +1,7 @@
 import { Pagination, Row, Select, Skeleton, Space } from "antd";
 import { useEffect, useState } from "react";
 import { useBikesProvider } from "../providers/useBikesProvider";
+import { AddBikeButton } from "./AddBikeButton";
 import { BikeListItem } from "./BikeListItem";
 
 const limitOptions = [10, 15, 20, 25, 50].map((value) => ({
@@ -9,7 +10,7 @@ const limitOptions = [10, 15, 20, 25, 50].map((value) => ({
 }));
 
 export const BikesList = () => {
-  const { bikes, totalCount, isLoading, load } = useBikesProvider();
+  const { bikes, totalCount, isLoading, load, createBike } = useBikesProvider();
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
 
@@ -25,6 +26,7 @@ export const BikesList = () => {
 
   return (
     <Space orientation="vertical" style={{ padding: ".25rem .5rem" }}>
+      <AddBikeButton createBike={createBike} />
       {isLoading ? (
         <Skeleton />
       ) : (

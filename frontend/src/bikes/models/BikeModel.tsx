@@ -17,3 +17,5 @@ export type BikesPageModel = {
   totalCount: number;
   bikes: BikeModel[];
 };
+
+export type CreateBikeModel = Omit<BikeModel, "id">;
