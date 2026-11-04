@@ -1,6 +1,10 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { BikesRepository } from "./bikes.repository";
-import type { BikesPageModel, FindBikesModel } from "./models/bike.model";
+import type {
+  BikeModel,
+  BikesPageModel,
+  FindBikesModel,
+} from "./models/bike.model";
 
 @Injectable()
 export class BikesService {
@@ -11,5 +15,11 @@ export class BikesService {
 
   findAll(input: FindBikesModel): Promise<BikesPageModel> {
     return this.repository.findAll(input);
+  }
+
+  async findById(id: string): Promise<BikeModel> {
+    const bike = await this.repository.findById(id);
+    if (!bike) throw new NotFoundException("Bike not found");
+    return bike;
   }
 }

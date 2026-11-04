@@ -26,6 +26,13 @@ export class BikesRepository {
     };
   }
 
+  async findById(id: string): Promise<BikeModel | null> {
+    const entity = await this.dataSource
+      .getRepository(BikeEntity)
+      .findOneBy({ id });
+    return entity ? this.toBikeModel(entity) : null;
+  }
+
   private toBikeModel(entity: BikeEntity): BikeModel {
     return {
       id: entity.id,
