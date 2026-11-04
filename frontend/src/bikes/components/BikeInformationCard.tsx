@@ -11,6 +11,7 @@ import {
   Space,
   Typography,
 } from "antd";
+import { isAxiosError } from "axios";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import type { BikeModel, UpdateBikeModel } from "../models/BikeModel";
@@ -68,17 +69,20 @@ export const BikeInformationCard = ({
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [values, setValues] = useState<BikeInformationValues | null>(null);
   const [errors, setErrors] = useState<BikeInformationErrors>({});
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const startEditing = () => {
     if (!bike) return;
     setValues(toValues(bike));
     setErrors({});
+    setSaveError(null);
     setIsEditing(true);
   };
 
   const cancel = () => {
     setValues(null);
     setErrors({});
+    setSaveError(null);
     setIsEditing(false);
   };
 
@@ -86,6 +90,7 @@ export const BikeInformationCard = ({
     if (!values) return;
     const validationErrors = validate(values);
     setErrors(validationErrors);
+    setSaveError(null);
     if (Object.keys(validationErrors).length > 0) return;
 
     setIsSaving(true);
@@ -97,8 +102,11 @@ export const BikeInformationCard = ({
       description: values.description.trim(),
     })
       .then(cancel)
-      // On failure, stay in edit mode so the changes are not lost
-      .catch(() => {})
+      .catch((error) => {
+        // On failure, stay in edit mode so the changes are not lost
+        const message = isAxiosError(error) && error.response?.data.message;
+        setSaveError(message ? String(message) : "This bike could not be saved");
+      })
       .finally(() => setIsSaving(false));
   };
 
@@ -181,6 +189,11 @@ export const BikeInformationCard = ({
           <Col span={12}>{textField("category", "Category *")}</Col>
           <Col span={12}>{textField("price", "Price (€) *", "number")}</Col>
           <Col span={24}>{textField("description", "Description *")}</Col>
+          {saveError && (
+            <Col span={24}>
+              <Typography.Text type="danger">{saveError}</Typography.Text>
+            </Col>
+          )}
         </Row>
       ) : (
         <Descriptions column={1} items={items} />

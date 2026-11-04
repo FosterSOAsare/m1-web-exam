@@ -9,6 +9,7 @@ import {
   Switch,
   Typography,
 } from "antd";
+import { isAxiosError } from "axios";
 import { useState } from "react";
 import type { CreateBikeModel } from "../models/BikeModel";
 
@@ -91,23 +92,29 @@ export const AddBikeButton = ({ createBike }: AddBikeButtonProps) => {
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [values, setValues] = useState<BikeFormValues>(emptyValues);
   const [errors, setErrors] = useState<BikeFormErrors>({});
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const close = () => {
     setValues(emptyValues);
     setErrors({});
+    setSaveError(null);
     setIsOpen(false);
   };
 
   const onConfirm = () => {
     const validationErrors = validate(values);
     setErrors(validationErrors);
+    setSaveError(null);
     if (Object.keys(validationErrors).length > 0) return;
 
     setIsSaving(true);
     createBike(toCreateBikeModel(values))
       .then(close)
-      // On failure, stay in the modal so the values are not lost
-      .catch(() => {})
+      .catch((error) => {
+        // On failure, stay in the modal so the values are not lost
+        const message = isAxiosError(error) && error.response?.data.message;
+        setSaveError(message ? String(message) : "This bike could not be saved");
+      })
       .finally(() => setIsSaving(false));
   };
 
@@ -174,6 +181,11 @@ export const AddBikeButton = ({ createBike }: AddBikeButtonProps) => {
               />
             </Space>
           </Col>
+          {saveError && (
+            <Col span={24}>
+              <Typography.Text type="danger">{saveError}</Typography.Text>
+            </Col>
+          )}
         </Row>
       </Modal>
     </>
