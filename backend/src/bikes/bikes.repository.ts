@@ -7,7 +7,9 @@ import type {
   BikesPageModel,
   CreateBikeModel,
   FindBikesModel,
+  UpdateBikeModel,
 } from "./models/bike.model";
+import { BikeNotFoundError } from "./models/persistence-error.model";
 
 @Injectable()
 export class BikesRepository {
@@ -36,7 +38,29 @@ export class BikesRepository {
 
   async create(input: CreateBikeModel): Promise<BikeModel> {
     const repository = this.dataSource.getRepository(BikeEntity);
-    return this.toBikeModel(await repository.save(repository.create(input)));
+    try {
+      return this.toBikeModel(await repository.save(repository.create(input)));
+    } catch (error) {
+      this.translateError(error);
+    }
+  }
+
+  async update(id: string, input: UpdateBikeModel): Promise<BikeModel> {
+    try {
+      return await this.dataSource.transaction(async (manager) => {
+        const repository = manager.getRepository(BikeEntity);
+        const entity = await repository.findOneBy({ id });
+        if (!entity) throw new BikeNotFoundError();
+        repository.merge(entity, input);
+        return this.toBikeModel(await repository.save(entity));
+      });
+    } catch (error) {
+      this.translateError(error);
+    }
+  }
+
+  private translateError(error: unknown): never {
+    throw error;
   }
 
   private toBikeModel(entity: BikeEntity): BikeModel {

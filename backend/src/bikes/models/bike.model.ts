@@ -27,6 +27,8 @@ export interface CreateBikeModel {
   priceCents: number;
 }
 
+export type UpdateBikeModel = Partial<CreateBikeModel>;
+
 export interface FindBikesModel {
   page: number;
   limit: number;

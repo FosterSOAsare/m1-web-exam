@@ -5,6 +5,7 @@ import {
   Inject,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Query,
 } from "@nestjs/common";
@@ -12,7 +13,8 @@ import { BikesService } from "./bikes.service";
 import { BikeResponseDto, BikesPageResponseDto } from "./dto/bike-response.dto";
 import { CreateBikeDto } from "./dto/create-bike.dto";
 import { FindBikesQueryDto } from "./dto/find-bikes-query.dto";
-import type { CreateBikeModel } from "./models/bike.model";
+import { UpdateBikeDto } from "./dto/update-bike.dto";
+import type { CreateBikeModel, UpdateBikeModel } from "./models/bike.model";
 
 @Controller("bikes")
 export class BikesController {
@@ -25,13 +27,6 @@ export class BikesController {
     return BikesPageResponseDto.fromModel(
       await this.service.findAll({ page: query.page, limit: query.limit }),
     );
-  }
-
-  @Get(":id")
-  async findById(
-    @Param("id", ParseUUIDPipe) id: string,
-  ): Promise<BikeResponseDto> {
-    return BikeResponseDto.fromModel(await this.service.findById(id));
   }
 
   @Post()
@@ -50,5 +45,33 @@ export class BikesController {
       priceCents: dto.priceCents,
     };
     return BikeResponseDto.fromModel(await this.service.create(input));
+  }
+
+  @Get(":id")
+  async findById(
+    @Param("id", ParseUUIDPipe) id: string,
+  ): Promise<BikeResponseDto> {
+    return BikeResponseDto.fromModel(await this.service.findById(id));
+  }
+
+  @Patch(":id")
+  async update(
+    @Param("id", ParseUUIDPipe) id: string,
+    @Body() dto: UpdateBikeDto,
+  ): Promise<BikeResponseDto> {
+    const input: UpdateBikeModel = {
+      brand: dto.brand,
+      model: dto.model,
+      description: dto.description,
+      category: dto.category,
+      frameMaterial: dto.frameMaterial,
+      frameSizeCm: dto.frameSizeCm,
+      wheelSizeInches: dto.wheelSizeInches,
+      gearCount: dto.gearCount,
+      weightKg: dto.weightKg,
+      electric: dto.electric,
+      priceCents: dto.priceCents,
+    };
+    return BikeResponseDto.fromModel(await this.service.update(id, input));
   }
 }
