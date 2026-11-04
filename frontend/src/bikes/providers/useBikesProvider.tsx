@@ -6,12 +6,12 @@ import type {
   CreateBikeModel,
 } from "../models/BikeModel";
 
-export const useBikesProvider = () => {
+export const useBikesProvider = (page: number, limit: number) => {
   const [bikes, setBikes] = useState<BikeModel[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const load = (page: number, limit: number) => {
+  const load = () => {
     setIsLoading(true);
     axios
       .get<BikesPageModel>("http://localhost:3000/bikes", {
@@ -28,25 +28,11 @@ export const useBikesProvider = () => {
 
   // Returns the request so the caller can react to errors (e.g. bike with sales)
   const deleteBike = (id: string) =>
-    axios.delete(`http://localhost:3000/bikes/${id}`).then(() => {
-      setBikes((prev) => prev.filter((bike) => bike.id !== id));
-      setTotalCount((prev) => prev - 1);
-    });
+    axios.delete(`http://localhost:3000/bikes/${id}`).then(load);
 
   // Returns the request so the caller can react to errors
   const createBike = (input: CreateBikeModel) =>
-    axios
-      .post<BikeModel>("http://localhost:3000/bikes", input)
-      .then((result) => {
-        // Keep the same order as the backend: brand, then model
-        setBikes((prev) =>
-          [...prev, result.data].sort(
-            (a, b) =>
-              a.brand.localeCompare(b.brand) || a.model.localeCompare(b.model),
-          ),
-        );
-        setTotalCount((prev) => prev + 1);
-      });
+    axios.post<BikeModel>("http://localhost:3000/bikes", input).then(load);
 
   return { bikes, totalCount, load, isLoading, deleteBike, createBike };
 };

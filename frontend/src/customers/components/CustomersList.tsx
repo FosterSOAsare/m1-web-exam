@@ -10,6 +10,8 @@ const limitOptions = [10, 15, 20, 25,  50].map((value) => ({
 }));
 
 export const CustomersList = () => {
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
   const {
     customers,
     totalCount,
@@ -17,12 +19,10 @@ export const CustomersList = () => {
     createCustomer,
     isLoading,
     load,
-  } = useCustomersProvider();
-  const [page, setPage] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(10);
+  } = useCustomersProvider(page, limit);
 
   useEffect(() => {
-    load(page, limit);
+    load();
   }, [page, limit]);
 
   // The current page may not exist with the new limit, so go back to the first

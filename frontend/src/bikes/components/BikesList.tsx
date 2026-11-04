@@ -10,13 +10,13 @@ const limitOptions = [10, 15, 20, 25, 50].map((value) => ({
 }));
 
 export const BikesList = () => {
-  const { bikes, totalCount, deleteBike, createBike, isLoading, load } =
-    useBikesProvider();
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
+  const { bikes, totalCount, deleteBike, createBike, isLoading, load } =
+    useBikesProvider(page, limit);
 
   useEffect(() => {
-    load(page, limit);
+    load();
   }, [page, limit]);
 
   // The current page may not exist with the new limit, so go back to the first
