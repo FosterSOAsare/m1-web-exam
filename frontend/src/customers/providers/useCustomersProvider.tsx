@@ -26,12 +26,12 @@ export const useCustomersProvider = () => {
       });
   };
 
-  const deleteCustomer = (id: string) => {
+  // Returns the request so the caller can react to errors
+  const deleteCustomer = (id: string) =>
     axios.delete(`http://localhost:3000/customers/${id}`).then(() => {
       setCustomers((prev) => prev.filter((customer) => customer.id !== id));
       setTotalCount((prev) => prev - 1);
     });
-  };
 
   // Returns the request so the caller can react to errors (e.g. email already in use)
   const createCustomer = (input: CreateCustomerModel) =>

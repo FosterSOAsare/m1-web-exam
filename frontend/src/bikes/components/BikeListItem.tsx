@@ -1,17 +1,18 @@
 import {
-  DeleteOutlined,
   EyeOutlined,
   ShoppingOutlined,
   TagOutlined,
   ThunderboltOutlined,
 } from "@ant-design/icons";
-import { Button, Col, Row, Space } from "antd";
+import { Col, Row, Space } from "antd";
 import { ButtonLink } from "../../shared/components/ButtonLink";
 import { ListItem } from "../../shared/components/ListItem";
 import type { BikeModel } from "../models/BikeModel";
+import { DeleteBikeButton } from "./DeleteBikeButton";
 
 interface BikeListItemProps {
   bike: BikeModel;
+  deleteBike: (id: string) => Promise<void>;
 }
 
 const formatPrice = (cents: number) =>
@@ -20,7 +21,7 @@ const formatPrice = (cents: number) =>
     currency: "EUR",
   });
 
-export const BikeListItem = ({ bike }: BikeListItemProps) => {
+export const BikeListItem = ({ bike, deleteBike }: BikeListItemProps) => {
   return (
     <ListItem>
       <Col span={9}>
@@ -51,9 +52,7 @@ export const BikeListItem = ({ bike }: BikeListItemProps) => {
             </ButtonLink>
           </Col>
           <Col>
-            <Button danger>
-              <DeleteOutlined />
-            </Button>
+            <DeleteBikeButton bike={bike} deleteBike={deleteBike} />
           </Col>
         </Row>
       </Col>

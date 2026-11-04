@@ -26,6 +26,13 @@ export const useBikesProvider = () => {
       });
   };
 
+  // Returns the request so the caller can react to errors (e.g. bike with sales)
+  const deleteBike = (id: string) =>
+    axios.delete(`http://localhost:3000/bikes/${id}`).then(() => {
+      setBikes((prev) => prev.filter((bike) => bike.id !== id));
+      setTotalCount((prev) => prev - 1);
+    });
+
   // Returns the request so the caller can react to errors
   const createBike = (input: CreateBikeModel) =>
     axios
@@ -41,5 +48,5 @@ export const useBikesProvider = () => {
         setTotalCount((prev) => prev + 1);
       });
 
-  return { bikes, totalCount, load, isLoading, createBike };
+  return { bikes, totalCount, load, isLoading, deleteBike, createBike };
 };

@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Inject,
   Injectable,
   NotFoundException,
@@ -12,7 +13,10 @@ import type {
   FindBikesModel,
   UpdateBikeModel,
 } from "./models/bike.model";
-import { BikeNotFoundError } from "./models/persistence-error.model";
+import {
+  BikeHasSalesError,
+  BikeNotFoundError,
+} from "./models/persistence-error.model";
 
 @Injectable()
 export class BikesService {
@@ -49,7 +53,18 @@ export class BikesService {
     }
   }
 
+  async delete(id: string): Promise<void> {
+    try {
+      if (!(await this.repository.delete(id)))
+        throw new NotFoundException("Bike not found");
+    } catch (error) {
+      this.translateError(error);
+    }
+  }
+
   private translateError(error: unknown): never {
+    if (error instanceof BikeHasSalesError)
+      throw new ConflictException("Bike has sales and cannot be deleted");
     if (error instanceof BikeNotFoundError)
       throw new NotFoundException("Bike not found");
     throw error;

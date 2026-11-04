@@ -10,7 +10,8 @@ const limitOptions = [10, 15, 20, 25, 50].map((value) => ({
 }));
 
 export const BikesList = () => {
-  const { bikes, totalCount, isLoading, load, createBike } = useBikesProvider();
+  const { bikes, totalCount, deleteBike, createBike, isLoading, load } =
+    useBikesProvider();
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
 
@@ -30,7 +31,9 @@ export const BikesList = () => {
       {isLoading ? (
         <Skeleton />
       ) : (
-        bikes.map((bike) => <BikeListItem key={bike.id} bike={bike} />)
+        bikes.map((bike) => (
+          <BikeListItem key={bike.id} bike={bike} deleteBike={deleteBike} />
+        ))
       )}
       <Row
         justify="space-between"

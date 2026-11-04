@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   Inject,
   Param,
   ParseUUIDPipe,
@@ -73,5 +75,11 @@ export class BikesController {
       priceCents: dto.priceCents,
     };
     return BikeResponseDto.fromModel(await this.service.update(id, input));
+  }
+
+  @Delete(":id")
+  @HttpCode(204)
+  async delete(@Param("id", ParseUUIDPipe) id: string): Promise<void> {
+    await this.service.delete(id);
   }
 }

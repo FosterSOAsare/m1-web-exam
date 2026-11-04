@@ -12,7 +12,7 @@ import { DeleteCustomerButton } from "./DeleteUserButton";
 
 interface CustomerListItemProps {
   customer: CustomerModel;
-  deleteCustomer: (id: string) => void;
+  deleteCustomer: (id: string) => Promise<void>;
 }
 
 export const CustomerListItem = ({

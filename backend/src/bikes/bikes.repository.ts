@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
-import { DataSource } from "typeorm";
+import { DataSource, QueryFailedError } from "typeorm";
 import { BikeEntity } from "./entities/bike.entity";
 import type {
   BikeModel,
@@ -9,7 +9,10 @@ import type {
   FindBikesModel,
   UpdateBikeModel,
 } from "./models/bike.model";
-import { BikeNotFoundError } from "./models/persistence-error.model";
+import {
+  BikeHasSalesError,
+  BikeNotFoundError,
+} from "./models/persistence-error.model";
 
 @Injectable()
 export class BikesRepository {
@@ -59,7 +62,22 @@ export class BikesRepository {
     }
   }
 
+  async delete(id: string): Promise<boolean> {
+    try {
+      const result = await this.dataSource.getRepository(BikeEntity).delete(id);
+      return (result.affected ?? 0) > 0;
+    } catch (error) {
+      this.translateError(error);
+    }
+  }
+
   private translateError(error: unknown): never {
+    if (
+      error instanceof QueryFailedError &&
+      error.message.includes("FOREIGN KEY constraint failed")
+    ) {
+      throw new BikeHasSalesError();
+    }
     throw error;
   }
 
