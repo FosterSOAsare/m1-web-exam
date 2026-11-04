@@ -36,6 +36,7 @@ export const DeleteCustomerButton = ({
         <DeleteOutlined />
       </Button>
       <Modal
+        centered
         okButtonProps={{ danger: true }}
         open={isOpen}
         title={`Deleting ${customer.firstName}`}
